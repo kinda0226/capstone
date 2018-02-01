@@ -1,0 +1,72 @@
+{% extends "article.html" %}
+{% load dict %}
+{% block content %}
+    {% if section == 'security' %}
+    <span class="hint">{{ message }}</span>
+    <div class="profile-info">
+        <form action="" method="post" onsubmit="return false;">
+            {% csrf_token %}
+            <label for="ux_password">Old Password</label>
+            <input type="password" id="ux_password" name="password">
+            <br/>
+            <label for="ux_password">New Password</label>
+            <input type="password" id="ux_newpassword" name="newpassword">
+            <br/>
+            <label for="ux_password">Confirm New Password</label>
+            <input type="password" id="ux_newpassword2">
+            <br/>
+            <button>Change</button>
+
+        </form>
+    </div>
+    <script>
+    $('input').change(function () {
+        var valid = true, hint = '', value = this.value;
+        switch(this.id) {
+            case 'ux_newpassword':
+                valid = (value.length >= 6 && value.match(/\d/) && value.match(/[a-zA-Z]/)) || (ux_password.value == '' && this.value == '');
+                hint = 'Length should be no less than 6 and including both digits and alphabets.';
+                break;
+            case 'ux_newpassword2':
+                valid = this.value == ux_newpassword.value;
+                hint = 'New passwords do not match.';
+                break;
+        }
+        if (!valid) {
+            $('.hint').html(' <i class="fa fa-minus-circle"></i>' + hint);
+        } else {
+            $('.hint').html('');
+        }
+    }).blur(function () {
+        $(this).change();
+    });
+    $('button').click(function(){
+        $('.hint').html('');
+        var cont = true;
+        var inps = $('input[type="password"]');
+        for (var i = 0, x = inps[0]; i < inps.length; ++i, x=inps[i]) {
+            if (cont) $(x).trigger('change');
+            if ($('.hint').html() != '') cont = false;
+        }
+        if (cont) $('form').attr('onsubmit', '').submit();
+    });
+    </script>
+    {% elif section == 'orders' %}
+    <div class="list articles">
+    {% for item in items %}
+        <div class="item">
+            <h2>Order #{{ item.id }}</h2>
+            <div class="abstract">{{ item.pubdatestr }}<br />
+                <ul>
+                {% for i in item.items %}
+                    <li>{{ i.detail }}</li>
+                {% endfor %}
+                </ul>
+                <p>Total: ${{ item.total }}</p>
+            </div>
+        </div>
+    {% endfor %}
+    {% include "widget_pagination.html" %}
+    </div>
+    {% endif %}
+{% endblock %}

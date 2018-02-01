@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block main %}
+<div class="container">
+{% if product %}
+    <form class="" method="POST" action="" onsubmit="return valid;">
+        <h1>Place an order</h1>
+        <p>You are about to buy:
+            <a href="/view/{{ product.id }}">{{ product.title }}</a>
+            x{{ request.POST.count }} @{{ product.price }}<br />
+            Subtotal: {{ subtotal }}
+            <input type="hidden" name="subtotal" value="{{ subtotal }}">
+            <input type="hidden" name="count" value="{{ request.POST.count }}">
+        </p>
+        <span class=".hint">{{ message }}</span><br/>
+        <button name="confirm" value="1">Order!</button>
+        {% csrf_token %}
+    </form>
+{% else %}
+<h1>{{ message }}</h1>
+{% endif %}
+</div>
+{% endblock %}

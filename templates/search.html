@@ -1,0 +1,14 @@
+{% extends "article_list.html" %}
+{% block beforeContent %}
+    <form action="/search" class="search">
+        <input type="text" name="q" id="q" value="{{ request.GET.q }}">
+        <button><i class="fa fa-search"></i> 搜索</button>
+    </form>
+    {% if not items %}
+        {% if request.GET.q %}
+            没有找到含有关键词 {{ request.GET.q }} 的页面。
+        {% else %}
+            请输入关键词。
+        {% endif %}
+    {% endif %}
+{% endblock %}

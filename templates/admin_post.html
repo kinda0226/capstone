@@ -1,0 +1,110 @@
+{% extends "admin.html" %}{% load dict %}{% load static %}
+{% block head %}
+    <script src="{% static "js/tinymce/tinymce.min.js" %}"></script>
+{% endblock %}
+{% block main %}
+	<form id="file_form" action="/admin/fileupload" target="form_target" method="post" enctype="multipart/form-data" style="width:0px;height:0;overflow:hidden"><input name="file" type="file" class="tinymce_upload"><input type="hidden" name="tinymce" value="true"></form>
+    <div class="container">
+
+		<h1>Edit {{ name }}</h1>
+
+        <form method="post" enctype="application/x-www-form-urlencoded" action="" id="mainForm"
+              class="form-horizontal">
+
+            <div class="row">
+                <div class="col-sm-8">
+                    <div class="form-group"><label for="ux_id">ID</label>
+
+                        <div class="col-sm-8"><input class="form-control" id="ux_id" readonly
+                                                     value="{{ item.id }}"/></div>
+                    </div>
+
+                    <div class="form-group"><label for="ux_id">Shop/Category ID</label>
+
+                        <div class="col-sm-8"><input class="form-control pointer" id="ux_column_id" readonly
+                                                     rel="/admin/column/{{ item.column_id }}"
+                                                     name="column_id"
+                                                     value="{% if request.GET.column_id %}{{ request.GET.column_id }}{% else %}{{ item.column_id }}{% endif %}"/></div>
+                    </div>
+
+                    <div class="form-group"><label for="ux_type">Page Type</label>
+					    <div class="col-sm-8">
+                            {% render_value postTypes item.postType "type" %}
+                        </div>
+                    </div>
+
+					<div class="form-group">
+                        <label for="ux_title">Title</label>
+
+                        <div class="col-sm-8"><input class="form-control" id="ux_title" name="title"
+                                                     value="{{ item.title }}" size="20"/></div>
+                    </div>
+
+                    <div class="form-group"><label for="ux_image">Image</label>
+                       <div class="col-sm-8"> <input
+                                type="hidden" id="ux_image"
+                                name="image"
+                                value="{{ item.image }}"/></div>
+                    </div>
+					
+                    <div class="form-group"><label for="ux_image">Sorting Order</label>
+
+                        <div class="col-sm-8"><input class="form-control" id="ux_order" name="order"
+                                                     value="{% if item.order %}{{ item.order }}{% else %}0{% endif %}" size="20"/></div>
+                    </div>
+                        <div class="form-group"><label for="ux_abstract">Abstract</label>
+                        <textarea class="form-control"
+                                  id="ux_abstract"
+                                  name="abstract"
+                                  rows="4">{{ item.abstract }}</textarea>
+                    <!-- </div> -->
+
+                    <div class="form-group">
+                        <label for="ux_content">Content (Detail)</label>
+                        <textarea class="form-control"
+                                  id="ux_content"
+                                  name="content"
+                                  rows="10">{{ item.content|safe }}</textarea>
+                    </div>
+
+
+					
+					<input type="hidden" name="q" value="{{ q }}" />
+					<input type="hidden" name="link" value="{{ link }}">
+                    <button class="btn btn-success" onclick="do_submit(mainForm)">Save</button>
+                    <button type="button" class="btn btn-danger" onclick="do_delete();">Delete</button>
+                    <a href="/view/{{ item.id }}">View</a>
+					<div style="display: none"><input type="checkbox" class="itemSelect" checked="checked" value="{{ item.id }}" /></div>
+                    
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label for="ux_price">Price ($)</label>
+                    <input type="text" class="form-control" id="ux_price" name="price" value="{{ item.price }}">
+                </div>
+
+            {% if users %}
+                <div class="form-group">
+                    <label for="ux_price">Owner</label>
+                    <select name="owner_id" id="ux_owner">
+                        {% for u in users %}
+                            <option value="{{ u.id }}">{{ u.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% else %}
+                <input type="hidden" name="owner_id" value="{{ request.siteUser.id }}">
+            {% endif %}
+            </div>
+        {% csrf_token %}
+        </form>
+        <div style="padding-top: 40px"></div>
+    </div>
+    <script>
+    $('.form-group select').addClass('form-control');
+    $('#ux_price').change(function(){
+        $(this).val(+$(this).val()||0);
+    });
+    </script>
+{% endblock %}

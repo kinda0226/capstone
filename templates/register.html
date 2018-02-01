@@ -1,0 +1,110 @@
+{% extends "base.html" %}{% load static %}
+{% block head %}
+    <style>
+    #modal-tos {
+        z-index: 10;
+        position: relative;
+        width: 80%;
+        height: 80%;
+        margin-left: 10%;
+        background: rgba(0,0,0,0.7);
+        overflow-y: scroll;
+    }
+    #modal-tos pre {
+        white-space: pre-line;
+    }
+    #modal-tos .close {
+        text-align: right;
+        color: var(--em-color);
+    }
+    </style>
+{% endblock %}
+{% block main %}
+<div class="container">
+    <form class="register" method="POST" action="/register" onsubmit="return valid;">
+    {% if step == 1 %}
+        <h1>注册</h1>
+        <input id="ux_username" type="text" name="username" placeholder="Username">
+        <input id="ux_password" type="password" name="password" placeholder="Password">
+        <input id="ux_password2" type="password" name="password2" placeholder="Password">
+        <button class="register">Register</button><br/>
+        <input type="hidden" value="2" name="step">
+
+        <script>
+        var valid = false;
+        function validator(field, value, callback) {
+            var validated = true, hint = '';
+            switch (field) {
+                case 'username':
+                    validated = value.length >= 3 && value.length < 20;
+                    hint = 'Username length should be 3 - 20 characters';
+                    if (validated) {
+                        $.post('/register', {'step': 1, 'validate': field, 'value': value}, function (data) {
+                            var validated = (data == 'OK');
+                            var hint = 'This username is already registered. <a href="/login">Log in.</a>';
+                            callback(validated, hint);
+                        });
+                    } else {
+                        callback(validated, hint);
+                    }
+                    break;
+                case 'password':
+                    validated = value.length >= 6 && value.match(/\d/) && value.match(/[a-zA-Z]/);
+                    hint = 'Password should be at least 6 at length and contains both digits and alphabets.';
+                    callback(validated, hint);
+                    break;
+                case 'password2':
+                    validated = value == ux_password.value;
+                    hint = 'New password dismatch.';
+                    callback(validated, hint);
+                    break;
+                default:
+                    callback(true, '');
+                    break;
+            }
+        }
+        function updateHint(v, h) {
+            if (v) {
+                $('.hint').html('');
+                valid = valid && v;
+            } else {
+                $('button.register').removeAttr('disabled');
+                $('.hint').html('<i class="icon fa fa-minus-circle"></i> ' + h);
+                valid = false;
+            }
+        }
+        $('input').on('change', function () {
+            validator(this.name, this.value, updateHint);
+        });
+        $('button.register').click(function () {
+            $(this).attr('disabled', 'disabled');
+
+            var inps = $('input');
+            function vr(i) {
+                validator(inps[i].name, inps[i].value, function (v, h) {
+
+                    if (v) {
+                        if (i == inps.length - 1) {
+                            valid = true;
+                            $('form').submit();
+                        } else {
+                            vr(i+1);
+                        }
+                    }
+                    else updateHint(v, h);
+                });
+            }
+            vr(0);
+        });
+        </script>
+
+    {% elif step == 2 %}
+{#    <form action="/register" class="register">#}
+        <div id="membership_ad"></div>
+        <a href="/">返回首页</a>
+{#        <input type="hidden" value="3" name="step">#}
+    {% endif %}
+        {% csrf_token %}
+    </form>
+</div>
+{% endblock %}

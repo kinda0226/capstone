@@ -1,0 +1,25 @@
+{% extends "article.html" %}{% load dict %}
+{% block content %}
+{#product#}
+<div class="tile">
+    <div class="thumbnail" style="background-image: url({{ post.image }})"></div>
+</div>
+<div class="desc">
+    <h2>{{ post.title }}</h2>
+    <div class="product-details">
+        {{ post.content|safe }}
+
+        <form action="/buy/{{ post.id }}" method="POST">
+            {% csrf_token %}
+        <div class="buy">
+            <label for="ux_price">Price:</label>
+            <div id="ux_price">${{ post.price }}</div>
+            <p>Buy:
+            <input type="text" name="count" value="1" size="4">
+            <button class="btn btn-primary">Buy</button></p>
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

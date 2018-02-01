@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block main %}
+<div class="container">
+    <form class="register" method="POST" action="/login" onsubmit="return valid;">
+        <h1>Login</h1>
+        <span class=".hint">{{ message }}</span><br/>
+        <input id="ux_username" type="text" name="username" placeholder="Username">
+        <input id="ux_password" type="password" name="password" placeholder="Password">
+        <input type="checkbox" name="save" value="save"> Save Password <br/>
+        <button class="register">Log In</button>
+        {% csrf_token %}
+    </form>
+</div>
+{% endblock %}

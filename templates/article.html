@@ -1,0 +1,36 @@
+{% extends "base.html" %}{% load dict %}
+{% block main %}
+    <div class="banner" style="background-image: url({{ column.image }})">
+        <h1>{{ uppercolumn.title }}</h1>
+    </div>
+    <div class="container">
+        <div class="left">
+            <ul class="leftnav">
+                {% for item in leftnav %}
+                    <li>
+                        <a href="{% if item.url %}{{ item.url }}{% else %}/view/{{ item.id }}{% endif %}" {% if item.id == post.id or item.id == post.column_id or item.active %}class="active"{% endif %}>{{ item.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+			{% if post %}{% ad column.title|concat:post.title 'vertical' basic.adVWidth basic.adVHeight %}{% endif %}
+        </div>
+        <div class="right">
+            {% if column.postType != 'product-list' %}
+            <h2>{{ post.title }}</h2>
+            {% endif %}
+            <div class="content">
+                {% block content %}
+                    {{ post.content|safe }}
+                {% endblock %}
+                {% if post %}{% ad column.title|concat:post.title 'horizontal' basic.adHeight %}{% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <script>
+    addInit(function () {
+        if ($('.leftnav .active').length >= 2)
+            $($('.leftnav .active')[0]).removeClass('active');
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>{% load static %}
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    :root {
+        --em-color: {{ basic.emColor }};
+        --theme-shade-color: {{ basic.themeShadeColor }};
+        --theme-link-color:  {{ basic.themeLinkColor }};
+        --theme-bg-color:    {{ basic.themeBgColor }};
+        --theme-font-color:  {{ basic.themeFontColor }};
+    }
+    </style>
+    <link rel="icon" href="{% static "favicon.ico" %}">
+    <link rel="stylesheet" media="screen" type="text/css" href="{% static "css/font-awesome.min.css" %}">
+    <link rel="stylesheet" media="screen" type="text/css" href="{% static "css/base.css" %}" />
+    <script language="JavaScript" src="{% static "js/jquery.min.js" %}"></script>
+    <script language="JavaScript" src="{% static "js/base.js" %}"></script>
+    <title>{{ post.title }}{% if post.title %} - {% endif %}{{ basic.siteName }}</title>
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+<div class="header">
+    <img src="{% static "images/logo.png" %}" alt="" class="logo">
+    <ul class="nav">
+        <li>
+            <a href="/" {% if current <= 0 %}class="active"{% endif %}>Home</a>
+        </li>
+        {% if column %}
+            <li>
+                <a href="/view/{{ column.id }}" class="active">{{ column.title }}</a>
+            </li>
+        {% endif %}
+    </ul>
+    <ul class="actions">
+        {% if siteUser.authority > 1 or siteUser == column.owner %}
+            <a href="/admin">Web Admin</a>
+            |
+            <a href="/admin/column/{{ column.id }}">Manage</a>
+            <br />
+        {% endif %}
+        {% if siteUser.id %}
+            Welcome, <img src="/avatar/{{ siteUser.id }}" alt="" class="mini-avatar"><a href="/profile/{{ siteUser.username }}" class="usergroup {{ request.account.userGroup }}">{{ siteUser.username }}</a>
+            <i class="pointer notifications {% if not siteUser.notifications %}null{% endif %}" rel="/profile/?section=notifications">{{ siteUser.notifications|length }}</i>
+            |
+            <a href="/logout">Log Out</a>
+        {% else %}
+            <a href="/register">Register</a>
+            |
+            <a href="/login">Log In</a>
+            {% endif %}
+            |
+        <a href="/search"><i class="icon fa fa-search"></i></a>
+    </ul>
+    <div class="clear"></div>
+</div>
+{% block main %}
+{% endblock %}
+<div class="clear">
+</div>
+<div class="footer">
+    {{ basic.copyright|safe }}
+</div>
+</body>
+</html>

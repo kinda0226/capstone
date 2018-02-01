@@ -1,0 +1,13 @@
+{% extends "admin.html" %}{% load dict %}
+{% block main %}
+    <h1>用户账户: {{ account.siteUser.username }}</h1>
+    {% for k, v in account|items %}
+        {{ account_fields|keyvalue:k }}: {{ v }}<br />
+    {% endfor %}
+    账户状态: {% if account.audit == 0 %}正常{% else %}异常: 偏差{{ account.audit }} <a href="?audit=remaining">按余额校准记录</a> <a href="?audit=log">按记录校准余额</a>{% endif %}
+    <p>&nbsp;</p>
+    <h2>交易记录</h2>
+    {% with name="" %}
+        {% include "admin_list.html" %}
+    {% endwith %}
+{% endblock %}

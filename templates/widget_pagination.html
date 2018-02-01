@@ -1,0 +1,5 @@
+<div class="pagination">
+    {% for i, i_1 in pagination.pages %}
+        <a href="?page={{ i }}&{{ pagination.other_params }}" class="page {% if pagination.current_page == i %}active{% endif %}">{{ i_1 }}</a>
+    {% endfor %}
+</div>

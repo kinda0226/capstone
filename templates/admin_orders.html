@@ -1,0 +1,6 @@
+{% extends "admin.html" %}
+{% block main %}
+    {% with name='Orders' %}
+    {% include "admin_list.html" %}
+    {% endwith %}
+{% endblock %}

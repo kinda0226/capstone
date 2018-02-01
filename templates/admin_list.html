@@ -1,0 +1,78 @@
+{% load dict %}
+{% if name %}
+      <h1>{{ name }}</h1>
+          {% if not forbid_opers %}
+        <div class="opers">
+	  <ul class="nav nav-pills">
+        <li><button type="button" class="btn btn-primary" onclick="{% if new %}{{ new }}{% else %}location = '/admin/post?column_id={{ column.id }}';{% endif %}">New</button></li>
+        <li><button type="button" class="btn btn-success" onclick="location.reload()">Refresh</button></li>
+        <li><button type="button" class="btn btn-danger" onclick="do_delete();">Delete</button></li>
+        {% if pagination.current_page > 0 %}<li><button class="pointer btn btn-link" rel="?page={{ pagination.current_page|sub:1 }}">&lt;&lt;</button></li>{% endif %}
+        <li><button class="pointer btn btn-link" rel="?page={{ pagination.current_page|add:1 }}">&gt;&gt;</button></li>
+        <li style="line-height: 38px;">Total: {{ pagination.total }}</li>
+	  </ul></div>
+        {% endif %}
+{% endif %}
+      <table class="table table-striped" id="admin_list">
+			{% if items|length > 0 %}
+			<thead>
+			  	<tr>
+					<td><input type="checkbox" class="selectAll" /></td>
+                    <td class="field header" data-field="id">ID</td>
+                    {% if 'title' in items.0|keys %}
+					<td class="field header" data-field="title">Title</td>
+                    {% endif %}
+					{% for attr, k in items.0|items %}
+                    {% if attr != 'title' %}
+					<td class="field header" data-field="{{ attr }}">{{ fields_name|keyvalue:attr }}</td>
+                    {% endif %}
+					{% endfor %}
+                    {% if name == 'Orders' %}
+                        <td class="field header">Details</td>
+                    {% endif %}
+				</tr>
+			</thead>
+            {% if not forbid_opers %}
+			<tbody class="editable">
+            {% endif %}
+		        {% for item in items %}
+		        <tr class="item">
+					<td class="field selector"><input type="checkbox" class="itemSelect" value="{{ item.id }}" data-order="{{ item.order }}" /></td>
+					<td class="field itemId">{{ item.id }}</td>
+                    {% if 'title' in item|keys %}
+					<td class="field itemTitle" data-field="title">{{ item.title }}</td>
+                    {% endif %}
+					{% for attr, v in item|items %}
+                        {% if attr != 'title' %}
+						{% if attr != 'content' %}
+						<td class="field {{ attr }}" data-field="{{ attr }}">
+                            {% render_value fields_type|keyvalue:attr v %}
+                            {% if attr == 'dealt' and not v %}
+                                <a href="?deal={{ item.id }}">Deal</a>
+                            {% endif %}
+                        </td>
+						{% else %}
+						<td class="field {{ attr }}" data-field="content"><a href="/admin/post/{{ item.id }}">Edit</a></td>
+						{% endif %}
+                        {% endif %}
+					{% endfor %}
+                {% if name == 'Orders' %}
+                    <td class="field">
+                        To: {{ item.siteUser.username }}<br/>
+                        {% for i in item.items %}
+                            {{ i.detail }}<br/>
+                        {% endfor %}
+                    </td>
+                {% endif %}
+				</tr>
+		        {% endfor %}
+            {% if not forbid_opers %}
+            </tbody>
+			{% endif %}
+			{% endif %}
+  		  </table>
+{% if not name %}
+    <script>
+    $('tbody input, tbody select').attr('disabled', 'disabled');
+    </script>
+{% endif %}

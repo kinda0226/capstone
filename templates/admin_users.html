@@ -1,0 +1,15 @@
+{% extends "admin.html" %}
+{% block main %}
+    {% with name="Users" forbid_ordering=True %}
+    {% include "admin_list.html" %}
+    {% endwith %}
+
+
+    <script>
+    $('#opers button').click(function() {
+        if (!confirm('Are you sure to #?'.replace('#', $(this).text()))) return;
+        $('[name="ids"]').val(get_ids());
+        $('[name="action"]').val($(this).data('action'));
+    });
+    </script>
+{% endblock %}

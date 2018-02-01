@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>成功</title>
+</head>
+<body>
+<h1>操作成功</h1>
+3秒后自动跳转……<a id="jump" href="#">立即跳转</a>
+<script>
+    var url = location.search.substr('?redir='.length);
+    setTimeout(function () {
+        location.href = url;
+    }, 3000);
+    jump.href = url;
+</script>
+</body>
+</html>

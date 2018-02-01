@@ -1,0 +1,3 @@
+{% load dict %}{% if userid %}
+    <a href="/profile/{% uname userid %}"><img src="/avatar/{{ userid }}" class="mini-avatar"><em class="usergroup {% ugroup userid %}">{% uname userid %}</em></a>
+{% endif %}

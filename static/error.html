@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>Failure</title>
+</head>
+<body>
+<h1></h1>
+Error upon processing your request. <a id="jump" href="javascript:history.go(-1)">Go Back</a>
+<script>
+    var message = location.search.substr(3);
+    document.getElementsByTagName('h1')[0].innerHTML = decodeURI(message);
+    setTimeout(function () {
+        history.go(-1);
+    }, 3000);
+</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+{% extends "admin.html" %}{% load dict %}{% load static %}
+{% block head %}
+    <script src="{% static "js/tinymce/tinymce.min.js" %}"></script>
+{% endblock %}
+{% block main %}
+<h1>基本信息设置</h1>
+<form action="" method="post" enctype="multipart/form-data" id="mainForm">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="ux_backups danger">恢复备份设置</label>
+        <select name="backup" id="ux_backups" class="form-control">
+            <option value="" selected>不恢复</option>
+            {% for b in basic|keyvalue:"__backups" %}
+                <option value="{{ b.key }}">{{ b.key }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-danger backups">恢复备份</button>
+    </div>
+{% for item in items %}
+    {% if item.settingValueType %}
+    <div class="form-group">
+        <label for="ux_{{ item.settingName }}">{{ item.settingDescription }}</label>
+        {% if item.settingValueType == 'html' %}
+            <textarea name="{{ item.settingName }}"
+                      id="ux_{{ item.settingName }}"
+                      cols="30" rows="10" class="form-control html">{{ item.settingValue|safe }}</textarea>
+        {% elif item.settingValueType == 'str' %}
+            <input type="text" name="{{ item.settingName }}" id="ux_{{ item.settingName }}" class="form-control" value="{{ item.settingValue }}">
+        {% elif item.settingValueType == 'color' or item.settingValueType == 'numeric' %}
+            <input type="text" name="{{ item.settingName }}" id="ux_{{ item.settingName }}" class="form-control" value="{{ item.settingValue }}" rel="{{ item.settingValueType }}">
+        {% elif item.settingValueType == 'str[]' %}
+            <div class="form-group">
+                <a class="array-add" href="javascript:void(0)"><i class="fa fa-plus"></i></a>
+                <a class="array-sub" href="javascript:void(0)"><i class="fa fa-minus"></i></a>
+                <input type="hidden" name="{{ item.settingName }}" id="ux_{{ item.settingName }}" class="form-control" value="{{ item.settingValue }}">
+                {% for inp in item.settingValue|slice:"5:"|fromjson %}
+                    <input type="text" rel="array" class="form-control" value="{{ inp }}" />
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+{% endfor %}
+    <button class="btn btn-success">保存</button>
+</form>
+<h1>用户组管理</h1>
+<div class="ug-controls">
+    <div class="form-group">
+        <div class="form-group">
+            <label for="ux_name_">名称</label>
+            游客
+            <a class="ug-add" href="javascript:void(0)"><i class="fa fa-plus"></i></a>
+            <a title="请至少设置一个用户组。用户组按从低到高的顺序排列，较高级别的用户组可以查看较低级别用户组的内容。不同的套餐也请在此设置并保证合理排序。"><i class="fa fa-question-circle"></i></a>                        
+        </div>
+    </div>
+    {% for ug in basic.userGroups %}
+    <div class="ug form-group">
+        <div class="form-group" data-ipkey="name">
+            <label>名称</label>
+            <input type="text" value="{{ ug.name }}" data-key="name" class="form-control" />
+            <a class="ug-sub" href="javascript:void(0)"><i class="fa fa-minus"></i></a>
+            <a class="ug-up" href="javascript:void(0)"><i class="fa fa-arrow-up"></i></a>
+            <a class="ug-down" href="javascript:void(0)"><i class="fa fa-arrow-down"></i></a>
+        </div>
+        <div class="form-group" data-ipkey="fee">
+            <label>会费</label>
+            <input class="form-control" data-key="fee" value="{{ ug.fee }}" rel="numeric" />
+        </div>
+        <div class="form-group" data-ipkey="validDuration">
+            <label>有效期（天）</label>
+            <input class="form-control" data-key="validDuration" value="{{ ug.validDuration }}" rel="numeric" />
+        </div>
+        <div class="form-group" data-ipkey="style">
+            <label>名称样式</label>
+            <textarea class="form-control" data-key="style">{{ ug.style }}</textarea>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<form action="" method="post" enctype="multipart/form-data">
+    <input type="hidden" value="json:{{ basic.userGroups|jsonify }}" name="userGroups" id="ux_userGroups">
+    {% csrf_token %}
+    <button class="btn btn-success">更新</button>
+</form>
+<script>
+$('a.array-add').click(function () {
+    var tmpl = ' <input type="text" class="form-control" rel="array" />';
+    $(this).parent().append(tmpl);
+    $(this).parent().children('input[rel="array"]').first().trigger('change');
+});
+$('a.array-sub').click(function() {
+    $(this).parent().children('input[rel="array"]').last().remove();
+    var f = $(this).parent().children('input[rel="array"]').first();
+    if (!f) $(this).siblings('input[type="hidden"]').trigger('change');
+
+});
+$('.btn.backups').click(function () {
+    if (!$('#ux_backups').val()) return;
+    if (!confirm('恢复备份将覆盖现有设置，是否继续？')) {
+        $('#ux_backups').val('');
+    }
+});
+$('.btn-success').click(function () {
+    $('#ux_backups').val('');
+});
+
+var ug_tmpl;
+addInit(function () {
+    ug_tmpl = $('.ug')[0].outerHTML;
+    ug_tmpl = ug_tmpl
+        .replace(/(data-key="style">)(.*)(<\/textarea>)/, function (x) { return x.substr(0, x.indexOf('>')+1) + x.substr(x.lastIndexOf('<')); })
+        .replace(/(value=")(.*?)(")/, function (x) { return x.substr(0, x.indexOf('"')+1) + x.substr(x.lastIndexOf('"')); })
+    ;
+});
+var swap_ug = function (a, b) {
+    var ipa = $(a).children(), ipb = $(b).children();
+    for (var j = 0; j < ipa.length; ++j) {
+        var w = ipa[j], v = ipb[j];
+        var k = $(w).data('ipkey');
+        var ta = $(w).children('[data-key="' + k + '"]').val();
+        var tb = $(v).children('[data-key="' + k + '"]').val();
+        $(v).children('[data-key="' + k + '"]').val(ta);
+        $(w).children('[data-key="' + k + '"]').val(tb);
+    }
+};
+$('.ug-sub').click(function (){
+    if ($('.ug').length == 1) {
+        alert('不能删除唯一的会员名称。');
+        return;
+    }
+    $(this).parent().parent().remove();
+    $('.ug:first [data-key="name"]').trigger('change');
+});
+$('.ug-add').click(function () {
+    $('.ug').parent().append(ug_tmpl);
+});
+$('.ug-up').click(function () {
+    var p = $(this).parent().parent();
+    var pn = p.prev('.ug');
+    if (!pn || pn.length == 0) return;
+    swap_ug(p, pn);
+    $('.ug:first [data-key="name"]').trigger('change');
+});
+$('.ug-down').click(function () {
+    var p = $(this).parent().parent();
+    var pn= p.next('.ug');
+    if (!pn || pn.length == 0) return;
+    swap_ug(p, pn);
+    $('.ug:first [data-key="name"]').trigger('change');
+});
+$(document).on('change', '.ug [data-key]', function () {
+    var vec = [];
+    var ugs = $('.ug');
+    for (var i = 0; i < ugs.length; ++i) {
+        var x = ugs[i];
+        var d = {};
+        var ips = $(x).children();
+        for (var j = 0; j < ips.length; ++j) {
+            var w = ips[j];
+            var k = $(w).data('ipkey');
+            var v = $(w).children('[data-key="' + k + '"]').val();
+            d[k] = v;
+        }
+        vec.push(d);
+    }
+    $('#ux_userGroups').val('json:' + JSON.stringify(vec));
+    console.log(vec);
+})
+</script>
+{% endblock %}

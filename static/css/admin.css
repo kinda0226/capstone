@@ -1,0 +1,139 @@
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 3.5rem tall */
+body {
+  padding-top: 3.5rem;
+}
+
+/*
+ * Typography
+ */
+
+h1 {
+  padding-bottom: 9px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+/*
+ * Sidebar
+ */
+
+.sidebar {
+  position: fixed;
+  top: 51px;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 20px 0;
+  overflow-x: hidden;
+  overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+  border-right: 1px solid #eee;
+}
+
+.sidebar .nav {
+  margin-bottom: 20px;
+}
+
+.sidebar .nav-item {
+  width: 100%;
+}
+
+.sidebar .nav-item + .nav-item {
+  margin-left: 0;
+}
+
+.sidebar .nav-link {
+  border-radius: 0;
+}
+
+/*
+ * Dashboard
+ */
+
+/* Placeholders */
+.placeholders {
+  padding-bottom: 3rem;
+}
+
+.placeholder img {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+td.header, td.itemId {
+  cursor: pointer;
+}
+
+tbody td.itemId {
+  color: #2d8ac7;
+}
+
+td.header.asc:after {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+  content: '\f062';
+}
+
+td.header.desc:after {
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+  content: '\f063';
+}
+
+i.notifications {
+    border: 0;
+    border-radius: 12px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-color: #00da87;
+    color: #fff;
+    font-style: normal;
+    text-align: center;
+    line-height: 18px;
+    vertical-align: middle;
+}
+
+i.notifications.null {
+    display: none;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+li.nav-right {
+    float: right;
+}
+
+.opers .nav.nav-pills li {
+    margin: 0px 5px 15px 5px;
+}
+
+.opers .nav.nav-pills li>* {
+    height: 38px;
+}
+
+td.image img, td.banner img {
+    width: 160px;
+    height: auto;
+	cursor: pointer;
+}
+
+#ux_backups, input[rel="array"], .ug input, input.medium {
+    width: 170px;
+    display: inline-block;
+    margin-bottom: 5px;
+}
