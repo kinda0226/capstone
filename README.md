@@ -30,7 +30,7 @@ and then start development server at http://0.0.0.0:8000/</br>
 now you can view the website~</br>
 
 Screenshot and Introduction of the website</br>
-－－－－
+----
 Main page - Home</br>
 ![](https://github.com/kinda0226/capstone/raw/master/image/1.png)  
 register page
